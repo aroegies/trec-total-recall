@@ -1,0 +1,161 @@
+html{
+  height: 100%;
+}
+body{
+  height:inherit;
+  margin:0;
+}
+div{
+  height:100%;
+}
+div#menu{
+  height:3%;
+  background-color: rgba(211,211,211,0.2);
+}
+
+div#content{
+  height:97%;
+  overflow:auto;
+  width:100%;
+}
+.nav{
+  display:inline;
+}
+div#userinfo{
+  float:right;
+}
+div#submit{
+  width : 50%;
+  float: left;
+}
+div#result{
+  width: 50%;
+  float: right;
+}
+div#userinfo{
+  float:right;
+}
+form{
+  height:inherit;
+}
+textarea{
+  width:95%;
+  height:80%;
+}
+div#sep{
+  background-color: black;
+  height:2px;
+  width:100%;
+}
+
+div#pretty{
+  height:49%;
+  overflow:auto;
+}
+div#raw{
+  height:49%;
+  overflow:auto;
+}
+h1 {
+  text-align:center;
+}
+div#corpora{
+  width : 49%;
+  float: left;
+  overflow: auto;
+  border-right:2px solid;
+}
+div#topics{
+  width: 49%;
+  float:right;
+  overflow: auto;
+  border-left:2px solid;
+}
+table{
+  width:100%;
+  text-align:center;
+}
+ul.nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+ol.intro{
+  padding-left: 100px;
+}
+li.nav {
+    float: left;
+}
+
+a.nav {
+    display: block;
+    width: 150px;
+    height:100%;
+    font-size:20px;
+}
+a.nav:link, a.nav:visited{
+  color: black;
+  text-decoration:none;
+  font-weight: bold;
+  text-align: center;
+  padding: 4px;
+  height:100%;
+}
+
+a.nav:hover,a.nav:active{
+  color:red;
+}
+div#topic{
+  height:10%;
+  overflow:auto;
+}
+
+div#full{
+  height:85%;
+  overflow:auto;
+}
+button.judge{
+  font-size: 15px;
+  border: 1px solid;
+  box-shadow: none;
+  background-color: transparent;
+  text-shadow: none;
+  padding-bottom: 5px;
+  margin:10px;
+  padding-top:5px;
+  outline:none;
+}
+div#judgement{
+  height:3%;
+}
+div#nav {
+  text-align:center;
+  float:right;
+  background-color: rgba(211,211,211,0.2);
+  width:150px;
+  height:inherit;
+}
+
+span#rel{
+  color: green;
+  font-weight: bold;
+  font-size: 20px;
+}
+span#nrel{
+  color: red;
+  font-weight: bold;
+  font-size: 20px;
+}
+span#unknown{
+  color: orange;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+
+div#doc {
+  height:inherit;
+  margin-right:150px;
+  overflow:auto;
+}

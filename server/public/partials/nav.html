@@ -1,0 +1,18 @@
+<div ng-controller="NavCtrl" ng-show='loggedIn()'>
+<div id="corpora">
+  <h1>Corpora</h1>
+  <table >
+  <tr><th>Corpus</th><th>Lang</th><th>Type</th><th>Mode</th><th>Restricted</th><th>Download</th></tr>
+  <tr ng-repeat="corpus in corpora"><td>{{corpus.corpid}}</td><td>{{corpus.lang}}</td><td>{{corpus.type}}</td><td>{{corpus.mode}}</td>
+  <td>{{corpus.restricted}}</td><td><a ng-href="/{{corpus.uri}}.tgz">{{corpus.corpid}}</a></td></tr>
+  </table>
+</div>
+<div id="topics">
+  <h1>Topics</h1>
+  <table >
+  <tr><th>Topic</th><th>Corpus</th><th>Information Need</th><th>Mode</th><th>Batch Request</th><th>Search</th></tr>
+  <tr ng-repeat="topic in topics"><td>{{topic.topid}}</td><td>{{topic.corpid}}</td><td>{{topic.need}}</td><td>{{topic.mode}}</td>
+  <td><a ng-href="#/batch/{{topic.topid}}">Batch</a></td><td><a ng-href="#/search/{{topic.corpid}}/{{topic.topid}}">Search</a></td></tr>
+  </table>
+</div>
+</div>

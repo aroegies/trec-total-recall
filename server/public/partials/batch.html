@@ -1,0 +1,21 @@
+<div ng-controller="BatchCtrl">
+  <div id="submit">
+    <form name="subform" ng-submit="isvalid() && submit()">
+      <b>Runid</b>: {{runid}} <br>
+      <b>Topic</b>: {{topic}} <br>
+      <b>Docs</b>: <br> <textarea ng-model="docs" name="tdocs" placeholder='["Enter","Text","Like","This"]' required/></textarea><br>
+      <input type="submit" value="Submit" ng-disabled="subform.$invalid" />
+    </form>
+  </div>
+  <div id="result">
+    <div id="pretty">
+      <h3> Pretty </h3>
+      <table>
+        <tr> <th>Docid</th> <th>Judgement</th> </tr>
+        <tr ng-repeat="doc in retdocs"><td >{{doc.docid}}</td><td>{{doc.judgement}}</td></tr>
+      </table>
+    </div>
+    <div id="sep"></div>
+    <div id="raw"> <h3> Raw </h3> {{retdocs}} </div>
+  </div>
+</div>

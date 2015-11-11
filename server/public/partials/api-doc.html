@@ -1,0 +1,196 @@
+<h1> Total Recall Live API Documentation </h1>
+
+<h3 style='color:red'> Reminder: To access at-home datasets you must submit the data agreement detailed in the <a href="http://plg.uwaterloo.ca/~gvcormac/total-recall/supp.html"> Supplemental Guidelines </a></h3>
+
+<h2> Getting Started </h2>
+
+To initially get started using the TREC Live API, you must first issue a GET query to <samp>quaid.uwaterloo.ca:33333/start/:groupid</samp> <br>
+where :groupid is your official TREC group identifier.
+<br>
+This will return a JSON object containing 3 fields:
+<ul>
+<li> <b>runid</b>: your run identification for the purposes of evaulation</li>
+<li> <b>corpus</b>: the corpus identifier for the corpus to retrieve</li>
+<li> <b>topic</b>: the topic identifier for the first topic </li>
+</ul>
+
+An example result follows:
+<pre>
+{"runid":"4SafB5FwxO","topic":"top1","corpus":"corp1"}
+</pre>
+
+<br /> 
+<br />
+<b>Alternatively</b>, you may submit an optional run alias to facilitate managing your runs. <br />
+Note that the service provides this as a convenience to you and does not make use of this alias in any way. <br />
+Using it with any of the commands listed below will generally result in a rejection of the request. <br />
+To start a run with an alias, submit a GET request to: <samp>quaid.uwaterloo.ca:33333/start/:groupid/:alias</samp>,
+where :group is your official TREC group identifier and :alias is your desired alias. 
+
+<h2> Corpus Retrieval </h2>
+To begin retrieving a corpus you <i>should</i> request the initial crawl document and/or the initial crawl page by issuing
+a GET query to <samp>quaid.uwaterloo.ca:33333/crawl/corpus/:corpus/:runid</samp><br>
+where :corpus is the corpus identifier that you wish to crawl, and :runid is the run identifier.
+
+A JSON object is returned containing:
+<ul>
+<li><b>corpus</b>: the corpus identifier for the corpus</li>
+<li><b>lang</b>: specifying the language of the corpus according to ISO 639-1 language codes (e.g., en/zh)</li>
+<li><b>type</b>: specifiying the type of the corpus (newswire, email, forum, microblog, web)</li>
+<li><b>url</b>: the url to download the corpus</li>
+<li><b>restricted</b>: whether the corpus needs to be required out-of-band (e.g. RCV1)
+</ul>
+<it> Note: forum has subsumed the usenet type.</it>
+
+Currently, there is only one way to retrieve the corpus through the API which is downloading the entire corpus as a <samp>.tgz</samp> file. One should issue a GET request to the URL provided in the above JSON response. Once the corpus is unpacked (e.g., <samp>tar zxf corpus.tgz</samp>), it will typically be in a directory named after the corpus identifier in the JSON response with one document per file. In addition, files will be named after the document identifer (docid), though the files may be in subdirectories. <br> <br>
+
+In the case of a restricted corpus (e.g., RCV1, Tipster), a dummy archive is transmitted that alerts you to download the corpus out-of-band (Note: This may require signing usage agreements). In this dummy archive will be a file that is called <samp>transform_corpus</samp>, it takes one argument (the path to the actual corpus) and transforms it into a Total Recall friendly version of the corpus (e.g., aligning document identifiers, removing embedded relevance information). At the time of writing, no restricted corpora will be provided using the live interface and so supporting this functionality is not required at the moment.
+
+<h2> Judgement Retrieval </h2>
+
+To get a relevance judgement for a document, issue a GET query to: <samp>quaid.uwaterloo.ca:33333/judge/:runid/:topic/:docid</samp><br>
+where :runid is your unique id returned with the call to /start, :topic is the topic you want the judgement for, and :docid is the document you want judged.
+<br><br>
+
+<b>Note</b>: Asking for this judgement will increase your effort and we will consider this document as the next element of your ranked list.  We <b>do not</b> consider training and ranking to be separate steps.
+<br><br>
+
+<b>Note</b>: Asking for multiple judgements for the same document and the same topic will increase your overall effort. <br><br>
+This will return an JSON object containing two fields:
+<ul>
+<li><b>docid</b>: the document id provided</li>
+<li><b>judgement</b>: the judgement for the document coded as an integer (-1 non-relevant, 1 relevant)</li>
+</ul>
+
+<h2> Bulk Retrieval </h2>
+
+Some approaches will eventually decide that some subset of the collection is relavant (e.g. SPL in Cormack and Grossman 2014). To reflect this, the API supports this through a POST request to <samp>quaid.uwaterloo.ca:33333/judge/:runid/:topic</samp> </br>
+where :runid is your run identifier, and :topid is the topic you are submitting these documents for. The documents should be contained in a POST request containing a JSON array of document identifiers.
+
+<br> <b> Remember to set <samp>Content-Type:application/json</samp>, otherwise, this will not work.</b>
+<br>
+An example request might look like: <samp> ["00000","00001"] </samp>
+<br>
+An interactive version can be found at <samp>quaid.uwaterloo.ca:33333/batch.html</samp>
+<br>
+The result will be a JSON array of docid,judgement pairs: <br> <samp> [{"docid":"00000","judgement":-1}, {"docid":"00001","judgement":-1} ] </samp>
+<br><br>
+An example <tt>curl</tt> call might look like: <br> <br>
+<samp>curl -XPOST -H 'Content-Type:application/json' 'quaid.uwaterloo.ca:33333/judge/pQ3d1gE32/top1' -d '["00000","00001","00002"]'</samp>
+<br>
+<b>Note</b>: Asking for multiple judgements for the same document and the same topic will increase your overall effort. <br><br>
+
+<h2> Calling Your Shot </h2>
+
+As a purely optional subtask, we allow you to <it>Call Your Shot</it>. Once you believe you have achieved a particular milestone (listed below), you are encouraged to submit a POST request to <samp>quaid.uwaterloo.ca:33333/judge/shot/:runid/:topid/:shot</samp>, where as usual :runid is the provided run identifier, :topid is the current topic identifier, and :shot is the particular milestone you are calling. <br><br>
+<table>
+<tr><th>Milestone</th><th>Description</th></tr>
+<tr><td>70recall</td><td>70% Recall has been achieved by the system</td></tr>
+<tr><td>80recall</td><td>80% Recall has been achieved by the system</td></tr>
+<tr><td>reasonable</td><td>According to the participant's own criteria, the most most reasonable and proportionate compromise between completeness and effort has been achieved. </td></tr>
+</table>
+<br />
+Participants are encouraged to submit (either using the mailing list or email) their own desired milestones and time permitting such milestones will be added.
+
+<h3> Knowing What You Called </h3>
+
+Participants can submit a GET request to <samp>quaid.uwaterloo.ca:33333/shots/:runid/:topid</samp>, where :runid specifies the run identifier and :topid specifies the topic identifier, to retrieve a list of the shots that a particular run has called for a particular topic. 
+
+<h2> Topic Queries </h2>
+
+There are three  topic queries that you can make, one is to get the information need for the provided topic and the other is to get the next topic.
+
+<h3> Topic Query </h3>
+
+Issue a GET query to <samp>quaid.uwaterloo.ca:33333/topic/need/:runid/:topic</samp><br>
+where :runid is the identifier for your run, and :topic is the topic identifier to get the information need (query).
+<br><br>
+The result will be JSON object containing:
+<ul>
+<li><b>topic</b>: the provided topic</li>
+<li><b>need</b>: the topic's information need statement </li>
+</ul>
+
+<h3>Next Topic</h3>
+Issue a GET query to <samp>quaid.uwaterloo.ca:33333/topic/:runid/:topic</samp><br>
+where :runid is the identifier for your run, :topic is the topic you have finished and want to move on from:
+<br><br>
+The result will be JSON object containing:
+<ul>
+<li><b>topic</b>: the next topic</li>
+<li><b>corpus</b>: the corpus identifier for the next topic</li>
+</ul>
+
+Should the corpus be the same from one topic to the next, it is not neccessary to re-fetch the corpus.
+<br>
+Should there be no further topics remaining, both topic and corpus will have a value of -1.
+
+<h3> All Topics </h3>
+Issue a GET query to <samp>quaid.uwaterloo.ca:33333/topic/topics/:runid</samp> to retrieve all particular topics for a particular run, specified by :runid.
+<br />
+The result will be a JSON array containing objects with the following keys:
+<ul>
+<li><b>topid</b>: the topic identifier</li>
+<li><b>corpid</b>: the corpus identifier for the topic </li>
+<li><b>need</b>: the topic's corresponding information need </li>
+</ul>
+
+<h2> Finalization </h2>
+
+Result generation cannot happen without first issuing a GET query to <samp>quaid.uwaterloo.ca:33333/finalize/:runid</samp> to indicate that the run has finished. <b> This is a required step to find out how well your run has performed in play-at-home configurations. Note that no online evaluation is permitted for at-home datasets. This is to prevent meta-learning between runs and/or topics.</b> <br> <br>
+
+Doing so will also prohibit the collection of additional document judgements for this run. <br>
+<h2> Run Fetching </h2>
+
+Given that you will be designing and testing Virtual Machine-based systems, the randomly assigned runid to your system may be lost when your VM closes.  Accordingly, a GET request sent to <samp>quaid.uwaterloo.ca:33333/crawl/runs/:groupid</samp> will return a JSON array of objects specifying details about all runs for your groupid, including:
+<ul>
+<li><b>runid</b>: the runid </li>
+<li><b>time</b>: the time the run was started </li>
+<li><b>mode</b>: the mode the run was started in</li>
+<li><b>finalized</b>: whether the run has been finalized (0 or 1, false and true respectively)</li>
+<li><b>alias</b>: the alias of the run, if not supplied then null </li>
+</ul>
+
+<br />
+
+Note that your run should continue to submit requests until the entire corpus has been assessed. This is to facilitate the generation of full gain curves. However, we understand that such a process may require too many resources for some participants and in such a case we recommend that you submit at least 100,000 documents for large corpora. This should provide enough judgements to generate most of a gain curve. For the remainder we will append the rest of the corpus in random order.
+
+<h2> Changing Modes </h2>
+
+To support testing different run configurations, we allow you to change the ``testing mode'' that your runs will run as. There are three modes, trivial (to ensure your run works/API calls are correct), test (to ensure your system returns sane results), live (to run on the actual live datasets). Typically, you will progress from trivial to test to live as you develop systems.
+<br/>
+A GET request to <samp>quaid.uwaterloo.ca:33333/mode/:groupid/:mode</samp>, where :mode is one of the specified modes. All groups start in the trivial mode. 
+<br />
+
+<h2> Result Generation </h2>
+
+<h4> Result generation is not possible with at-home datasets. This is to prevent meta-learning and is a standard TREC process. </h4>
+
+To get the results for a particular run and particular topic, issue a GET query to <samp>quaid.uwaterloo.ca:33333/results/:runid/:topic</samp> <br>
+where :runid is the unique id provided by the call to /start, :topic is the topic you want results for.
+
+The result will be a JSON array containing pairs consisting of:
+<br><br>
+<ul>
+<li><b>recall</b>: the recall achieved </li>
+<li><b>effort</b>: the number of judgement requests required to achieve the above recall</li>
+</ul>
+
+Alternatively, you may also submit a GET request to: <samp>quaid.uwaterloo.ca:33333/results/:runid</samp> to generate all of the per-topic results for a particular runid. Note that this may take several/many seconds to generate depending on the size of the corpora and the number of topics being offered.
+<br />
+The results will come format as a JSON object in the form of <samp>TOPIC_IDENTIFIER:RESULT_ARRAY</samp>, where RESULT_ARRAY is in the same format as the results generated per-topic. A trucnated example follows: <br />
+<samp>{"top1":[{recall:0.1,effort:50},...],"top2":[{recall:0.1,effort:50},...],...}</samp>
+
+<h2> Error Logs </h2>
+
+We keep a limited database of errors encountered by systems. A GET request to <samp>quaid.uwaterloo.ca:33333/crawl/errors/:id</samp>, where :id is either a group identifier or run identifier, will return all errors for that
+run or group.
+<br />
+<br />
+The result consists of a JSON array of objects containing:
+<ul>
+<li><b>runid: </b> the id supplied in the call </li>
+<li><b>msg: </b> the error message </li>
+<li><b>code: </b> the HTTP status code </li>
+<li><b>time: </b> the timestamp of the error </li>
+</ul>

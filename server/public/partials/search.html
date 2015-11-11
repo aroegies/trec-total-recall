@@ -1,0 +1,28 @@
+<div id="main" style="height:100%">
+<div id="nav">
+<form name="search" style="height:initial;">
+<input ng-keyup="topid != -1 && $event.keyCode == 13 && doSearch()" id="search" type="text" style="width:90%" ng-model="isjquery" class="form-control input" required/><br>
+</form>
+<button type="submit" ng-click="nextDoc()" class="judge" ng-disabled="search.$invalid || topid ==-1"> Next Document </button>
+<button ng-click="isjdoc != {} && judgeDoc()" class="judge" ng-disabled="search.$invalid || topid ==-1"> Judge Doc </button> <br>
+</div>
+
+<div id="doc" style="height:100%" >
+<div id="topic">
+  <h2> Topic: {{topid}} </h2>
+  <span ng-bind="topic.need"></span>
+</div>
+<div id="sep"></div>
+<div id="judgement">
+ <h2 style="display:inline">Judgement:</h2> 
+ <span ng-show="judgement === 0" id="unknown">Unknown </span>
+ <span ng-show="judgement === 1" id="rel">Relevant</span> 
+ <span ng-show="judgement === -1" id="nrel"> Not Relevant</span>
+</div>
+<div id="sep"></div>
+<div id="full">
+  <h2>Document:</h2>
+  <span ng-bind-html="isjdoc.full"></span>
+</div>
+</div>
+</div>

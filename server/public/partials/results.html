@@ -1,0 +1,14 @@
+  <span style="height:2%"  id="details-form">
+  <form name="subform" ng-submit="submit()">
+    Runid: <input type="text" ng-model="runid" name="trunid" required/> 
+    <input type="submit" value="Submit" ng-disabled="subform.$invalid || inProgress" />
+    <it>Note: Requests will take several seconds to process. Please be patient.</it>
+  </form>
+  </span>
+  <div style="height:98%;text-align:center;width:50%;overflow:auto" id="results" ng-hide="results === {}">
+  <table ng-repeat="(topid,result) in results">
+  <caption>Topic: <b>{{topid}}</b></caption>
+  <tr><th>Recall</th><th>Effort</th><th>Precision</th><th>F1</th></tr>
+  <tr ng-repeat="topres in result"><td>{{topres.recall}}</td><td>{{topres.effort}}</td><td>{{topres.prec}}</td><td>{{topres.f1}}</td></tr>
+  </table>
+  </div>

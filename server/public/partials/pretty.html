@@ -1,0 +1,8 @@
+  <h1> THIS CAN TAKE MANY SECONDS. PATIENCE IS REQUIRED. MASHING F5 WILL NOT HELP YOU </h1>
+  <div style="text-align:center;width:50%;" id="results" ng-hide="results === {}">
+  <table ng-repeat="(topid,result) in results">
+  <caption>Topic: <b>{{topid}}</b></caption>
+  <tr><th>Recall</th><th>Effort</th><th>Precision</th><th>F1</th></tr>
+  <tr ng-repeat="topres in result"><td>{{topres.recall}}</td><td>{{topres.effort}}</td><td>{{topres.prec}}</td><td>{{topres.f1}}</td></tr>
+  </table>
+  </div>

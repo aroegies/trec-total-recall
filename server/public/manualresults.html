@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang='en' ng-app="trmanualres" style="height:100%;">
+<head>
+  <script src="js/angular.min.js" type="text/javascript"></script>
+  <script src="js/manualres.js" type="text/javascript"></script>
+<title> Manual Run Results </title>
+</head>
+<body ng-controller='ManualResCtrl'>
+  <div style="text-align:center;width:100%" id="results">
+  <table style="width:50%" ng-repeat="(topid,result) in results">
+  <caption>Topic: <b>{{topid}}</b></caption>
+  <tr><th>Recall</th><th>Effort</th><th>Precision</th><th>F1</th></tr>
+  <tr ng-repeat="topres in result"><td>{{topres.recall}}</td><td>{{topres.effort}}</td><td>{{topres.prec}}</td><td>{{topres.f1}}</td></tr>
+  </table>
+  </div>
+</body>
+</html>
