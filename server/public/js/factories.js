@@ -1,13 +1,13 @@
 var trecfactory = angular.module('trecfactory',[]);
 
 trecfactory.factory('Auth', ['$http', '$q', function($http, $q){
-  var info = { gid : "", rid : ""};
+  var info = { gid : ""};
   return{
     setinfo : function(newgid){
-      info.rid = newgid;
-      return $http.get("/validated/"+info.rid).then(function(resp){
-        if(typeof resp.data === 'object'){
-          return resp.data.runid; 
+      info.gid = newgid;
+      return $http.get("/validate/"+info.gid).then(function(resp){
+        if(resp.status === 200){
+          return info.gid
         }else{
           return $q.reject(resp.data);
         }
@@ -15,8 +15,8 @@ trecfactory.factory('Auth', ['$http', '$q', function($http, $q){
           return $q.reject(resp.data);
       });
     },
-    getrid : function(){
-      return info.rid;
+    getgid : function(){
+      return info.gid;
     }
   }
 

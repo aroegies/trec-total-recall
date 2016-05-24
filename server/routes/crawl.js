@@ -18,14 +18,22 @@ router.get('/corpus/:corpid/:runid', function(req,res){
   var runid = req.params.runid;
   utils.validation(db, runid, res, function(){
     db.query('select * from corpora where corpid = ? and mode = (select mode from teamids where runid = (?))', [corpid,runid], function(err, results){
-    if(err){
-      utils.logError(db,teamid,404,'Corpus request failed: ' + corpid);
-    } else if(results.length == 0){
-      res.status(404).send("Invalid corpus identifier");
-      utils.logError(db,teamid,404,'Invalid corpus identifier: ' + corpid);
-    } else {
-      res.json({corpus:results[0].corpid,url:req.headers.host + "/" + results[0].uri+".tgz",lang:results[0].lang, type:results[0].type, restricted:results[0].restricted});
-    }
+      if(err){
+        res.status(404).send("Request for corpus failed: " + corpid);
+        utils.logError(db,teamid,404,'Corpus request failed: ' + corpid);
+        return;
+      } else if(results.length == 0){
+        res.status(404).send("Invalid corpus identifier");
+        utils.logError(db,teamid,404,'Invalid corpus identifier: ' + corpid);
+        return;
+      } else {
+        res.json({corpus:results[0].corpid,
+          url:req.headers.host + "/" + results[0].uri+".tgz",
+          lang:results[0].lang, 
+          type:results[0].type, 
+          restricted:results[0].restricted
+        });
+      }
     });
   });
 });
@@ -41,19 +49,20 @@ router.get('/errors/:id', function(req,res){
   });
 });
 
-// Return all information relating to the corpora available to a particular run.
-router.get('/corpora/:runid', function(req,res){
+// Return all information relating to the corpora available to a particular group.
+router.get('/corpora/:groupid', function(req,res){
   var db = req.db
-  var runid = req.params.runid;
-  utils.validation(db, runid, res, function(){
-    db.query('select * from corpora where mode in (select mode from allowed_modes where groupid = (select groupid from teamids where runid = ?));',runid, function(err, results){
+  var groupid = req.params.groupid;
+  utils.groupValid(db, groupid, res, function(){
+    var stmt ='select * from corpora where mode in (select mode from allowed_modes where groupid = ?);' 
+    db.query(stmt,groupid, function(err, results){
       if(err){
         res.status(404).send("Corpora request failed.");
-        utils.logError(db,runid,404,'Request for corpora failed');
-      }else{
-        res.json(results);
+        utils.logError(db,groupid,404,'Request for corpora failed');
+        return;
       }
-    });
+      res.json(results);
+     });
   });
 });
 
@@ -65,10 +74,31 @@ router.get('/runs/:groupid', function(req,res){
     if(err){
       res.status(404).send("Unable to fetch runs");
       utils.logError(db,groupid,404,'Unable to fetch runs for group');
-    }else{
-      res.json(results);
+      return
     }
-  })
+    res.json(results);
+  });
+});
+
+// Return all runs associated with the group identifier, the current mode, and the appropriate type
+router.get('/runs/:groupid/:mode/:type', function(req,res){
+  var db = req.db;
+  var groupid = req.params.groupid;
+  var mode = req.params.mode;
+  var type = req.params.type;
+  var stmt ='select runid,mode,finalized,alias from teamids where groupid = ? and mode = ?'
+  if(type === 'auto')
+    stmt += 'and type = "auto"' 
+  else if(type === 'manual')
+    stmt += 'and type = "manual"' 
+  db.query(stmt,[groupid,mode],function(err,results){
+    if(err){
+      res.status(404).send('Unable to retrieve runid')
+      utils.logError(db,groupid,404,'Unable to retrieve runid');
+      return;
+    }
+    res.json(results)
+  });
 });
 
 module.exports = router;

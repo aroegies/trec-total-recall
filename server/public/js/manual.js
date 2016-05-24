@@ -21,9 +21,9 @@ trecapp.controller('ManualCtrl', ['$scope', '$http',
       });
     };
     $scope.changeMode = function (val){
-      $http.get('/manual/runs/'+$scope.gid+'/'+val).success(function(resp){
+      $http.get('/crawl/runs/'+$scope.gid+'/'+val+'/manual').success(function(resp){
         $scope.runs = resp;
-        $http.get('/manual/topics/'+$scope.gid+'/'+val).success(function(resp){
+        $http.get('/topic/group/'+$scope.gid+'/'+val).success(function(resp){
           $scope.topics = resp;
           $scope.seltopic = undefined;
           $scope.selrun = undefined;
@@ -31,25 +31,25 @@ trecapp.controller('ManualCtrl', ['$scope', '$http',
       });
     };
     $scope.newrun = function(){
-      $http.get('/manual/start/'+$scope.gid+'/'+$scope.selmode+'/'+$scope.newalias).success(function(resp){
+      $http.get('/start/manual/'+$scope.gid+'/'+$scope.selmode+'/'+$scope.newalias).success(function(resp){
         $scope.runs.push(resp);
         $scope.newalias = "";
       });
     };
     $scope.finalizeRun = function(){
       $scope.selrun.finalized = 1;
-      $http.get('/manual/finalize/'+$scope.selrun.runid).error(function(){
+      $http.get('/finalize/'+$scope.selrun.runid).error(function(){
         alert('Run not finalized');
       })
     }
     $scope.changeShots = function(){
-      $http.get('/manual/getshots/'+$scope.selrun.runid+'/'+$scope.seltopic.topid).success(function(resp){
+      $http.get('/unshots/'+$scope.selrun.runid+'/'+$scope.seltopic.topid).success(function(resp){
         console.log(resp)
         $scope.shots = resp;
       });
     }
     $scope.callshot = function(){
-      $http.post('/manual/shot/'+$scope.selrun.runid+'/'+$scope.seltopic.topid+'/'+$scope.selshot.type).success(function(){
+      $http.post('/judge/shot/'+$scope.selrun.runid+'/'+$scope.seltopic.topid+'/'+$scope.selshot.type).success(function(){
         alert('Shot called');
         $scope.changeShots();
       })

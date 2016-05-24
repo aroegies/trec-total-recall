@@ -19,16 +19,16 @@
         <li class="nav"><a class="nav" href="#/doc">API</a></li>
         <li class="nav"><a class="nav" href="#/runs">Runs</a></li>
         <li class="nav"><a class="nav" href="#/results">Results</a></li>
-        <li class="nav" ng-show='rid != ""'><a class="nav" href="#/topics">Explore</a></li>
+        <li class="nav" ng-show='gid != ""'><a class="nav" href="#/topics">Explore</a></li>
       </ul>
     </div>
     <div id="userinfo">
-      <div ng-show='rid != ""'>
-        <b>RunID</b>: {{rid}}
+      <div ng-show='gid != ""'>
+        <b>GroupID</b>: {{gid}}
       </div>
-      <div ng-hide='rid != ""'>
+      <div ng-hide='gid != ""'>
         <form name="subform" ng-submit="setAuth(rgid)">
-        <b>RunID</b>: <input type="text" ng-model="rgid" name="trunid" required/>
+        <b>GroupID</b>: <input type="text" ng-model="rgid" name="trunid" required/>
         <input type="submit" value="Login" ng-disabled="subform.$invalid" />
       </form>
       </div>

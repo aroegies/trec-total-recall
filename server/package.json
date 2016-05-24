@@ -2,7 +2,7 @@
   "name":"recall-server",
   "main":"server.js",
   "description":"server for total recall",
-  "version":"0.0.1",
+  "version":"1.0.0",
   "private":true,
   "dependencies":{
     "express":"4.8.3",
@@ -11,6 +11,8 @@
     "body-parser":"latest",
     "elasticsearch":"latest",
     "connect-busboy":"latest",
-    "csv" : "latest"
+    "csv" : "latest",
+    "winston" : "latest",
+    "winston-mysql-transport" : "latest"
   }
 }

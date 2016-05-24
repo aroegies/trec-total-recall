@@ -3,7 +3,7 @@ var trecappctrl = angular.module('trecappctrl', []);
 trecappctrl.controller('BatchCtrl',['$scope', '$http', '$routeParams', 'Auth',
   function($scope, $http, $routeParams, Auth){
     $scope.topic = $routeParams.topid;
-    $scope.runid = Auth.getrid();
+    $scope.runid = Auth.getgid();
     $scope.retdocs = {};
     $scope.submit = function(){
       var req = {
@@ -76,21 +76,21 @@ trecappctrl.controller('NavCtrl',['$scope', '$http', 'Auth', function($scope, $h
   $scope.corpora = {};
   $scope.topics = {};
   $scope.loggedIn = function(){
-    return Auth.getrid() != "";
+    return Auth.getgid() !== "";
   }
-  $http.get("/crawl/corpora/"+Auth.getrid()).success(function(resp){
+  $http.get("/crawl/corpora/"+Auth.getgid()).success(function(resp){
     $scope.corpora = resp;
   });
-  $http.get("/topic/all/"+Auth.getrid()).success(function(resp){
+  $http.get("/topic/group/"+Auth.getgid()).success(function(resp){
     $scope.topics = resp;
   });
 }]);
 
 trecappctrl.controller('AuthCtrl', ['$scope','$http','Auth', function($scope, $http, Auth){
-  $scope.rid="";
+  $scope.gid="";
   $scope.setAuth = function(newgid){
     Auth.setinfo(newgid).then(function(resp){
-      $scope.rid = resp;
+      $scope.gid = resp;
     },function(err){console.log("Error")});
   };
 }]);
@@ -102,7 +102,7 @@ trecappctrl.controller('SearchCtrl', ['$scope', '$http', '$sce', '$routeParams',
     $scope.topic = {};
     $scope.docno = 0;
     if($scope.topid != -1){
-      $http.get('/topic/need/' + Auth.getrid() + '/' + $scope.topid).success(function(data){
+      $http.get('/topic/need/' + Auth.getgid() + '/' + $scope.topid).success(function(data){
         $scope.topic = data;
         $scope.topic.need = $sce.trustAsHtml($scope.topic.need.replace(/(?:\r\n|\r|\n)/g, '<br />'))
       });
@@ -131,7 +131,7 @@ trecappctrl.controller('SearchCtrl', ['$scope', '$http', '$sce', '$routeParams',
     };
     $scope.doSearch = function(){
       $scope.docno = 0;
-      $http.get('search/' + $scope.corpid +'/'+ $scope.isjquery + "/" + $scope.docno ).success(function(data){
+      $http.get('/search/' + $scope.corpid +'/'+ $scope.isjquery + "/" + $scope.docno ).success(function(data){
         $scope.docno += 1;
         $scope.judgement = 0;
         $scope.isjdoc = data;
@@ -140,7 +140,7 @@ trecappctrl.controller('SearchCtrl', ['$scope', '$http', '$sce', '$routeParams',
       });
     }
     $scope.nextDoc = function(){
-      $http.get('search/' + $scope.corpid + '/' + $scope.isjquery + "/" + $scope.docno).success(function(data){
+      $http.get('/search/' + $scope.corpid + '/' + $scope.isjquery + "/" + $scope.docno).success(function(data){
         $scope.isjdoc = data;
 
         $scope.judgement = 0;
@@ -149,14 +149,14 @@ trecappctrl.controller('SearchCtrl', ['$scope', '$http', '$sce', '$routeParams',
       });
     }
     $scope.judgeDoc = function(){
-      $http.get('judge/' +Auth.getrid() +'/' + $scope.topid + '/' + $scope.isjdoc.docid).success(
+      $http.get('/search/judge/' + $scope.corpid +'/' + $scope.topid + '/' + $scope.isjdoc.docid).success(
         function(data){
           $scope.judgement = data.judgement;
       });
     }
     $scope.nextTopic = function(){
       if($scope.topid === -1) return;
-      $http.get('topic/' + Auth.getrid() + '/' + $scope.topid).success(function(data){
+      $http.get('/search/topic/' + $scope.corpid + '/' + $scope.topid).success(function(data){
         $scope.topid = data.topic;
         $scope.corpid
         $location.path('/search/'+$scope.corpid+'/'+$scope.topid);

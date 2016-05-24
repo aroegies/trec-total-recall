@@ -56,7 +56,7 @@
 <input ng-hide="selrun.finalized" type='button' value='Finalize run' ng-click='finalizeRun()'> <br />
 
 <b> Assessment Request: </b> <br />
-<form action="{{'/manual/upload/' + selrun.runid + '/' + seltopic.topid}}" method='post' enctype='multipart/form-data'>
+<form action="{{'/judge/upload/' + selrun.runid + '/' + seltopic.topid}}" method='post' enctype='multipart/form-data'>
   <p>Please select a csv file to upload (<it>One document identifier per line</it>, file should end in .csv, no more than 100k entries) <br />
   <input type='file' accept=".csv" name='upload-file' size='50' required></p>
   <input type='submit' value='Upload Assessment CSV'>

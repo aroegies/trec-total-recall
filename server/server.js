@@ -9,7 +9,7 @@ if(cluster.isMaster){
 }else {
   var express = require("express");
   var bodyParser = require('body-parser');
-  var logger = require('morgan');
+  var morgan = require('morgan');
   var mysql = require("mysql");
   var busboy = require('connect-busboy')
   var app = express();
@@ -17,18 +17,42 @@ if(cluster.isMaster){
   var topic = require('./routes/topic.js');
   var crawl = require('./routes/crawl.js');
   var submit = require('./routes/submit.js');
-  var manual = require('./routes/manual.js')
-  app.use(bodyParser.json({limit:'500mb'}));
-  app.use(bodyParser.urlencoded({limit:'500mb',extended:true}));
-  app.use(logger('dev'));
+  var search = require('./routes/search.js');
+  app.use(bodyParser.json({limit:'900mb'}));
+  app.use(bodyParser.urlencoded({limit:'900mb',extended:true}));
+  
   app.use(busboy())
   // TODO: Overall - ensure team validation occurs at all stages.
   var config = {
     host : 'localhost',
-    database : 'total_recall'
+    database : 'total_recall',
+    connectionLimit : 20
   };
-  var connection;
-  function retryOnDisconnect(){
+  var winston = require('winston')
+  winston.emitErrs = true;
+  require('winston-mysql-transport').Mysql;
+  var logger = new winston.Logger({
+    transports: [
+        new winston.transports.Console({
+          level: 'debug',
+          handleExceptions: true,
+          json: false,
+          colorize: true
+        }),
+        new winston.transports.Mysql({database : 'total_recall', host :'localhost', connectionLimit:15, table : 'log_table',user:" "})
+    ],
+    exitOnError:false
+})
+ logger.stream = {
+    write: function(message,encoding){
+      logger.info(message)
+    }
+  }
+  
+
+  app.use(morgan('combined',{'stream':logger.stream}));
+  var connection = mysql.createPool(config);
+  /*function retryOnDisconnect(){
     connection = mysql.createConnection(config);
     connection.connect(function(err){
       if(err){
@@ -43,9 +67,11 @@ if(cluster.isMaster){
       }
     });
   }
-  retryOnDisconnect();
+  retryOnDisconnect();*/
 
   app.use(function(req,res,next){
+    res.setTimeout(0)
+    req.setTimeout(0)
     req.db = connection;
     next();
   });
@@ -53,11 +79,12 @@ if(cluster.isMaster){
   app.use('/topic',topic);
   app.use('/crawl',crawl);
   app.use('/judge',submit);
-  app.use('/manual',manual);
+  app.use('/search',search);
   app.use(express.static(__dirname+'/public'));
-  var server = app.listen(33333,"0.0.0.0",function(){
+  var server = app.listen(33332,"0.0.0.0",function(){
     console.log('Listening on port %d', server.address().port);
   });
+  server.setTimeout(0)
   server.on('connection',function(sock){
     var db = connection;
     db.query('select ip from disallowed_ips where ip = ?;',sock.remoteAddress,function(err,results){
