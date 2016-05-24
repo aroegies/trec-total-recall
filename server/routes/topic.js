@@ -43,7 +43,7 @@ router.get('/group/:groupid/:mode', function(req,res){
   var db = req.db;
   var groupid = req.params.groupid;
   var mode = req.params.mode;
-  var stmt = 'select topid,corpid,need,(select uri from corpora where corpid = t.corpid) as uri from topics t where mode = ? and mode in (select mode from allowed_modes where groupid = ?);'
+  var stmt = 'select topid,corpid,need,(select uri from corpora where corpid = t.corpid limit 1) as uri from topics t where mode = ? and mode in (select mode from allowed_modes where groupid = ?);'
   db.query(stmt,[mode,groupid],function(err,results){
     if(err){
       console.log(err)
@@ -61,7 +61,7 @@ router.get('/group/:groupid',function(req, res){
   var db = req.db;
   var groupid = req.params.groupid;
   utils.groupValid(db,groupid, res, function(){
-    var stmt ="select topid,corpid,need,(select uri from corpora where corpid = t.corpid),mode from topics t where mode in (select mode from allowed_modes where groupid = ?);" 
+    var stmt ="select topid,corpid,need,(select uri from corpora where corpid = t.corpid limit 1),mode from topics t where mode in (select mode from allowed_modes where groupid = ?);" 
     db.query(stmt,groupid , function(err,results){
       if(err){
         console.log(err)
